@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    <h1>Customer with ID: <?= $customer; ?></h1>
+    <h1>Single Customer with ID: <?= $customer; ?></h1>
 </body>
 
 </html>
