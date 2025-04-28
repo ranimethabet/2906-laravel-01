@@ -103,3 +103,8 @@ php artisan db:seed --class=PostSeeder
 ```bash
 php artisan migrate:fresh --seed
 ```
+
+## Create a model with all other 7 classes
+```bash
+php artisan make:model Post -a
+```
