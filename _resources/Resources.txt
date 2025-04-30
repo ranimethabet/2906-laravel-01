@@ -1,0 +1,19 @@
+WAMP
+- https://wampserver.aviatechno.net/
+- https://wampserver.aviatechno.net/files/install/wampserver3.3.7_x64.exe
+- https://wampserver.aviatechno.net/files/vcpackages/all_vc_redist_x86_x64.zip
+
+VSCODE
+- https://code.visualstudio.com/download
+
+GIT
+- https://github.com/git-for-windows/git/releases/download/v2.49.0.windows.1/Git-2.49.0-64-bit.exe
+
+Composer
+- https://getcomposer.org/Composer-Setup.exe
+
+Postman
+- https://dl.pstmn.io/download/latest/win64
+
+Workbench
+- https://dev.mysql.com/downloads/file/?id=536668
