@@ -16,13 +16,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-
-        User::factory()->create([
-            'name' => 'Maged Yaseen',
-            'email' => 'magedyaseengroups@gmail.com',
-            // 'mobile' => '01024750245',
-            // 'roles' => '["moderatoe", "add_posts"]',
-            'password' => 'password',
+        $this->call([
+            UserSeeder::class,
+            PostStatusSeeder::class,
         ]);
+
+
     }
 }
