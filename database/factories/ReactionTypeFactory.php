@@ -17,7 +17,7 @@ class ReactionTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            // see seeder
+            // see Seeder
         ];
     }
 }
