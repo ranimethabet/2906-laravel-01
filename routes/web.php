@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostStatusController;
 use App\Http\Controllers\ReactionController;
@@ -19,6 +20,11 @@ use Illuminate\Support\Facades\Route;
 // Route::resource('users', UserController::class);
 // Route::resource('reactions', ReactionController::class);
 
+Route::prefix('posts')->controller(PostController::class)->group(function () {
+    Route::get('/by-user/{user_id}', 'by_user'); // https://website.com/posts/by/4
+    Route::get('/by-post-status-id/{post_status_id}', 'ids_by_post_status'); // https://website.com/posts/by/4
+});
+
 Route::resources([
     'posts' => PostController::class,
     'comments' => CommentController::class,
@@ -29,6 +35,10 @@ Route::resources([
     'reactions' => ReactionController::class,
 ]);
 
+
+Route::prefix('dashboard')->controller(DashboardController::class)->group(function () {
+    Route::get('statistics', 'statistics');
+});
 
 // Route::get('/init', function () {
 //     $models = [
