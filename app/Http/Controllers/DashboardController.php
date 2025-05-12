@@ -14,13 +14,22 @@ class DashboardController extends Controller
 
         // posts count
         $post = DB::table("posts")->count();
+
         // comments count
+        $comments = DB::table("comments")->count();
+
         // replies count
+        $replies = DB::table("replies")->count();
+
         // reactions count
+        $reactions = DB::table("reactions")->count();
 
         return [
             'users' => $user,
-            'posts' => $post
+            'posts' => $post,
+            'comments' => $comments,
+            'replies' => $replies,
+            'reactions' => $reactions,
         ];
     }
 }
