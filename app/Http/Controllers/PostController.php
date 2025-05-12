@@ -18,26 +18,32 @@ class PostController extends Controller
         // -------------- Query Builder VS. Eloquent ORM ------------
 
         // Same results
-        $posts = Post::all(); // eloquent (ORM)
-        $posts = Post::get(); // eloquent (ORM)
-        $posts = DB::table('posts')->get();
+        // $posts = Post::all(); // eloquent (ORM)
+        // $posts = Post::get(); // eloquent (ORM)
+        // $posts = DB::table('posts')->get();
+
+
 
 
 
         // Same results with joins
         // SELECT `posts`.`id` AS `post_id`, `title`, `body`, `type`, `user_id`, `post_statuses`.`id` `post_status_id`  FROM `posts` JOIN `post_statuses` ON `post_statuses`.`id` = `posts`.`post_status_id` ORDER BY `posts.id`
-        $posts = DB::table('posts')
-            ->join('post_statuses', 'post_statuses.id', '=', 'posts.post_status_id')
-            ->select(['posts.id AS post_id', 'title AS Post Title', 'body', 'type', 'user_id', 'post_statuses.id AS post_status_id'])
-            ->orderBy('posts.id')
-            ->get();
+        // $posts = DB::table('posts')
+        // ->join('post_statuses', 'post_statuses.id', '=', 'posts.post_status_id')
+        // ->select(['posts.id AS post_id', 'title AS Post Title', 'body', 'type', 'user_id', 'post_statuses.id AS post_status_id'])
+        // ->orderBy('posts.id')
+        // ->get();
+
+
+        // $posts = Post::with('post_status')->get();
+        $posts = Post::with(['post_status', 'user', 'comments'])->get();
 
 
 
         // Get a single value as a string/number
-        $posts = DB::table('posts')
-            ->where('id', '=', 5)
-            ->value('title');
+        // $posts = DB::table('posts')
+        //     ->where('id', '=', 5)
+        //     ->value('title');
 
 
         return $posts;
@@ -86,7 +92,25 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
+
+
+        // $post = DB::table('posts')
+        // return $post;
+        //     ->join('post_statuses', 'post_statuses.id', '=', 'posts.post_status_id')
+        //     ->select(['posts.id AS post_id', 'title AS Post Title', 'body', 'type', 'user_id', 'post_statuses.id AS post_status_id'])
+        //     ->where('posts.id', $post->id)
+        //     ->get();
+
+        // $post = Post::with('post_status')->where('id', $post)->first();
+
+
+
+        // $post->load('post_status');
+        // $post->load('post_status')->load('user');
+        $post->load(['post_status', 'user', 'comments']);
+
         return $post;
+
     }
 
     /**
