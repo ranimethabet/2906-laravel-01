@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
@@ -22,10 +23,6 @@ class PostController extends Controller
         // $posts = Post::get(); // eloquent (ORM)
         // $posts = DB::table('posts')->get();
 
-
-
-
-
         // Same results with joins
         // SELECT `posts`.`id` AS `post_id`, `title`, `body`, `type`, `user_id`, `post_statuses`.`id` `post_status_id`  FROM `posts` JOIN `post_statuses` ON `post_statuses`.`id` = `posts`.`post_status_id` ORDER BY `posts.id`
         // $posts = DB::table('posts')
@@ -36,17 +33,46 @@ class PostController extends Controller
 
 
         // $posts = Post::with('post_status')->get();
-        $posts = Post::with(['post_status', 'user', 'comments'])->get();
+        // $posts = Post::with(['post_status', 'user', 'comments'])->get();
 
 
+        // $posts = Post::with(['reactions'])->get(); // Get everything from all tables
+        // $posts = Post::with(['reactions'])->get(['id', 'title', 'body']); // Get everything from sub tables and only selected from parent table
+        // $posts = Post::with(
+        //     [
+        //         'reactions' => function ($query) {
+        //             $query->select(['reactionable_id', 'reaction_type_id', 'user_id']);
+        //         }
+        //     ]
+        // )->get(['id', 'title', 'body']); // get selected from all tables
+
+
+        // $posts = Post::with(
+        //     [
+        //         'reactions' => function ($query) {
+        //             $query->select(['reactionable_id', 'reaction_type_id', 'user_id']);
+        //         },
+        //         'comments' => function ($qry) {
+        //             $qry->select(['post_id', 'comment']);
+        //         }
+        //     ]
+        // )->get(['id', 'title', 'body']); // get selected from all tables
+
+
+        // $posts = Post::
+        //     with(['reactions:reactionable_id,user_id,reaction_type_id', 'comments:post_id,comment'])
+        //     ->get(['id', 'title', 'body']); // get selected from all tables
+
+        $posts = Post::with(['reactions', 'comments'])->get();
 
         // Get a single value as a string/number
         // $posts = DB::table('posts')
         //     ->where('id', '=', 5)
         //     ->value('title');
 
+        $readyPosts = PostResource::collection($posts);
 
-        return $posts;
+        return $readyPosts;
     }
 
     public function by_user($user_id)
@@ -57,7 +83,7 @@ class PostController extends Controller
         // $posts = DB::table('posts')->where('user_id', '=', $user_id)->get();
         // $posts = Post::where('user_id', $user_id)->get();
         $posts = DB::table('posts')->where('user_id', $user_id)->get();
-        return $posts;
+        return PostResource::collection($posts);
     }
 
     public function ids_by_post_status($post_status_id)
@@ -93,6 +119,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
 
+        $post->load(['post_status', 'user', 'comments:post_id,comment', 'reactions:reactionable_id,user_id,reaction_type_id']);
 
         // $post = DB::table('posts')
         // return $post;
@@ -107,9 +134,11 @@ class PostController extends Controller
 
         // $post->load('post_status');
         // $post->load('post_status')->load('user');
-        $post->load(['post_status', 'user', 'comments']);
 
-        return $post;
+        // The Same 
+        $readyPost = PostResource::make($post);
+        // $readyPost = new PostResource($post);
+        return $readyPost;
 
     }
 

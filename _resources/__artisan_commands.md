@@ -108,3 +108,8 @@ php artisan migrate:fresh --seed
 ```bash
 php artisan make:model Post -a
 ```
+
+## Create a resource
+```bash
+php artisan make:resource PostResource
+```

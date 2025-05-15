@@ -24,7 +24,11 @@ class ReactionSeeder extends Seeder
 
             $random_user_id = User::get()->random()->id;
 
-            $reactionable_type = fake()->randomElement(['post', 'comment', 'reply']);
+            // $reactionable_type = fake()->randomElement(['post', 'comment', 'reply']);
+
+
+            // If we use this, no need to use AppServiceProvider/boot -> Realation::forceMorphMap
+            $reactionable_type = fake()->randomElement(['App\Models\Post', 'App\Models\Comment', 'App\Models\Reply']);
 
             $reactionable_id = match ($reactionable_type) {
                 'post' => Post::inRandomOrder()->first()->id,
