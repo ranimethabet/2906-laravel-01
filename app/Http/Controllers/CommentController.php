@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
@@ -13,7 +14,9 @@ class CommentController extends Controller
      */
     public function index()
     {
-        //
+        $comments = Comment::all();
+
+        return CommentResource::collection($comments);
     }
 
     /**
@@ -37,7 +40,10 @@ class CommentController extends Controller
      */
     public function show(Comment $comment)
     {
-        //
+        $comment = new CommentResource($comment);
+        // $comment = CommentResource::make($comment);
+
+        return $comment;
     }
 
     /**

@@ -25,6 +25,10 @@ Route::prefix('posts')->controller(PostController::class)->group(function () {
     Route::get('/by-post-status-id/{post_status_id}', 'ids_by_post_status'); // https://website.com/posts/by/4
 });
 
+Route::prefix('users')->controller(UserController::class)->group(function () {
+    Route::get('/contacts', 'contacts');
+});
+
 Route::resources([
     'posts' => PostController::class,
     'comments' => CommentController::class,
@@ -40,23 +44,33 @@ Route::prefix('dashboard')->controller(DashboardController::class)->group(functi
     Route::get('statistics', 'statistics');
 });
 
-// Route::get('/init', function () {
-//     $models = [
-//         'User',
-//         'ReactionType',
-//         'PostStatus',
-//         'Post',
-//         'Comment',
-//         'Reply',
-//         'Reaction',
-//     ];
+Route::get('/init', function () {
+    $models = [
+        'User',
+        'ReactionType',
+        'PostStatus',
+        'Post',
+        'Comment',
+        'Reply',
+        'Reaction',
+    ];
 
-//     foreach ($models as $model) {
-//         // php artisan make:model ModelName -a
-//         Artisan::call('make:model', ['name' => $model, '-a' => true]);
+    foreach ($models as $model) {
 
-//         sleep(1);
-//     }
+        // SAME AS : php artisan make:model ModelName -a
+        // Artisan::call('make:model', ['name' => $model, '-a' => true]);
 
-//     return 'DONE';
-// });
+
+        // SAME AS : php artisan make:resource NameResource
+        // Artisan::call('make:resource', ['name' => "{$model}Resource"]);
+
+        // SAME AS : php artisan make:resource NameCollection
+        // Artisan::call('make:resource', ['name' => "{$model}Resource", '--collection' => true]);
+        // OR
+        Artisan::call('make:resource', ['name' => "{$model}Collection"]);
+
+        // sleep(1);
+    }
+
+    return 'DONE';
+});

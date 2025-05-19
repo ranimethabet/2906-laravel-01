@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PostCollection;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
@@ -63,14 +64,21 @@ class PostController extends Controller
         //     with(['reactions:reactionable_id,user_id,reaction_type_id', 'comments:post_id,comment'])
         //     ->get(['id', 'title', 'body']); // get selected from all tables
 
-        $posts = Post::with(['reactions', 'comments'])->get();
+        // $posts = Post::with('comments')->get();
+        // $posts = Post::get();
+
+        $posts = Post::paginate(100);
 
         // Get a single value as a string/number
         // $posts = DB::table('posts')
         //     ->where('id', '=', 5)
         //     ->value('title');
 
-        $readyPosts = PostResource::collection($posts);
+
+        // $readyPosts = PostResource::collection($posts);
+        // $readyPosts = $posts->toResourceCollection();
+        // PostCollection::wrap('Content');
+        $readyPosts = new PostCollection($posts);
 
         return $readyPosts;
     }
@@ -119,7 +127,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
 
-        $post->load(['post_status', 'user', 'comments:post_id,comment', 'reactions:reactionable_id,user_id,reaction_type_id']);
+        // $post->load(['post_status', 'user', 'comments:post_id,comment', 'reactions:reactionable_id,user_id,reaction_type_id']);
 
         // $post = DB::table('posts')
         // return $post;
@@ -136,8 +144,14 @@ class PostController extends Controller
         // $post->load('post_status')->load('user');
 
         // The Same 
-        $readyPost = PostResource::make($post);
+        // $post->load('comments');
+        $post->load('comments.replies');
+
+        // $readyPost = PostResource::make($post);
         // $readyPost = new PostResource($post);
+        // PostResource::wrap('Content');
+        // PostResource::withoutWrapping();
+        $readyPost = $post->toResource();
         return $readyPost;
 
     }
