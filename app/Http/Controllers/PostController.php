@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -110,7 +111,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('create-post');
     }
 
     /**
@@ -118,7 +119,10 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        //
+
+
+
+        return 'HELLO';
     }
 
     /**
