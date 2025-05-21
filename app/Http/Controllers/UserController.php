@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MiniUserResource;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -13,7 +16,23 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        // $users = DB::table("users")
+        //     ->join("posts", "posts.user_id", "=", "users.id")
+        //     ->join("comments", "comments.post_id", "=", "posts.id")
+        //     ->join("replies", "replies.comment_id", "=", "comments.id")
+        //     ->get();
+
+        // $users = User::with('posts.comments.replies')->get();
+        $users = User::with('posts')->get();
+
+        return UserResource::collection($users);
+    }
+
+    public function contacts()
+    {
+        $contacts = User::get();
+
+        return MiniUserResource::collection($contacts);
     }
 
     /**
@@ -37,7 +56,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+        return $user->toResource();
     }
 
     /**

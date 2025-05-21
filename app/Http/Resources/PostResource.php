@@ -18,12 +18,10 @@ class PostResource extends JsonResource
             'Post ID' => $this->id,
             'Post Title' => $this->title,
             'Post Content' => $this->body,
-            'Reactions' => $this->reactions,
-            'Comments' => CommentResource::collection($this->comments),
+            // 'Reactions' => ReactionResource::collection($this->whenLoaded('reactions')),
+            'Comments' => CommentResource::collection($this->whenLoaded('comments')),
             // 'By' => UserResource::make($this->user),
+            // 'Comments Count' => $this->comments->count(),
         ];
     }
 }
-
-
-

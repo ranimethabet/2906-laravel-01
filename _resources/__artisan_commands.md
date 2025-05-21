@@ -113,3 +113,16 @@ php artisan make:model Post -a
 ```bash
 php artisan make:resource PostResource
 ```
+
+## Create a collection
+```bash
+php artisan make:resource PostCollection
+// OR
+php artisan make:resource PostResource --collection
+```
+
+## Install Sanctum API
+```bash
+php artisan install:api
+```
+
