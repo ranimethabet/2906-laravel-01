@@ -11,7 +11,7 @@ class StorePostStatusRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class StorePostStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'type' => 'required|min:5|max:30|unique:post_statuses,type',
         ];
     }
 }

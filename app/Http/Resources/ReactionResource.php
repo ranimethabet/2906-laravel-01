@@ -14,6 +14,11 @@ class ReactionResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            "ID" => $this->id,
+            "User" => UserResource::make($this->user)->only(['id', 'name']),
+            "Reaction Type" => ReactionTypeResource::make($this->reactionType),
+            "created_at" => $this->created_at,
+        ];
     }
 }

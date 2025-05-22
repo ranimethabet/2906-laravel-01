@@ -14,8 +14,11 @@ class PostCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
+
+        PostResource::wrap('');
+
         return [
-            'data' => parent::toArray($request),
+            'posts' => parent::toArray($request),
             'meta' => [
                 'extra_data' => 'Extra Data'
             ],

@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
 
 
         // General for all resources
-        JsonResource::wrap('List Items');
-        JsonResource::withoutWrapping();
+        // JsonResource::wrap('List Items');
+        // JsonResource::withoutWrapping();
     }
 }
