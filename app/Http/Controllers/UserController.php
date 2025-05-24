@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\MiniUserResource;
+use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
@@ -16,16 +17,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        // $users = DB::table("users")
-        //     ->join("posts", "posts.user_id", "=", "users.id")
-        //     ->join("comments", "comments.post_id", "=", "posts.id")
-        //     ->join("replies", "replies.comment_id", "=", "comments.id")
-        //     ->get();
 
-        // $users = User::with('posts.comments.replies')->get();
-        $users = User::with('posts')->get();
+        $users = User::get();
 
-        return UserResource::collection($users);
+
+        return UserCollection::make($users);
+
+
     }
 
     public function contacts()

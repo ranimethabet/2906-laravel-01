@@ -7,6 +7,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -18,70 +19,9 @@ class PostController extends Controller
     public function index()
     {
 
-        // -------------- Query Builder VS. Eloquent ORM ------------
+        $posts = Post::with('reactions')->get();
 
-        // Same results
-        // $posts = Post::all(); // eloquent (ORM)
-        // $posts = Post::get(); // eloquent (ORM)
-        // $posts = DB::table('posts')->get();
-
-        // Same results with joins
-        // SELECT `posts`.`id` AS `post_id`, `title`, `body`, `type`, `user_id`, `post_statuses`.`id` `post_status_id`  FROM `posts` JOIN `post_statuses` ON `post_statuses`.`id` = `posts`.`post_status_id` ORDER BY `posts.id`
-        // $posts = DB::table('posts')
-        // ->join('post_statuses', 'post_statuses.id', '=', 'posts.post_status_id')
-        // ->select(['posts.id AS post_id', 'title AS Post Title', 'body', 'type', 'user_id', 'post_statuses.id AS post_status_id'])
-        // ->orderBy('posts.id')
-        // ->get();
-
-
-        // $posts = Post::with('post_status')->get();
-        // $posts = Post::with(['post_status', 'user', 'comments'])->get();
-
-
-        // $posts = Post::with(['reactions'])->get(); // Get everything from all tables
-        // $posts = Post::with(['reactions'])->get(['id', 'title', 'body']); // Get everything from sub tables and only selected from parent table
-        // $posts = Post::with(
-        //     [
-        //         'reactions' => function ($query) {
-        //             $query->select(['reactionable_id', 'reaction_type_id', 'user_id']);
-        //         }
-        //     ]
-        // )->get(['id', 'title', 'body']); // get selected from all tables
-
-
-        // $posts = Post::with(
-        //     [
-        //         'reactions' => function ($query) {
-        //             $query->select(['reactionable_id', 'reaction_type_id', 'user_id']);
-        //         },
-        //         'comments' => function ($qry) {
-        //             $qry->select(['post_id', 'comment']);
-        //         }
-        //     ]
-        // )->get(['id', 'title', 'body']); // get selected from all tables
-
-
-        // $posts = Post::
-        //     with(['reactions:reactionable_id,user_id,reaction_type_id', 'comments:post_id,comment'])
-        //     ->get(['id', 'title', 'body']); // get selected from all tables
-
-        // $posts = Post::with('comments')->get();
-        // $posts = Post::get();
-
-        $posts = Post::paginate(100);
-
-        // Get a single value as a string/number
-        // $posts = DB::table('posts')
-        //     ->where('id', '=', 5)
-        //     ->value('title');
-
-
-        // $readyPosts = PostResource::collection($posts);
-        // $readyPosts = $posts->toResourceCollection();
-        // PostCollection::wrap('Content');
-        $readyPosts = new PostCollection($posts);
-
-        return $readyPosts;
+        return new PostCollection($posts);
     }
 
     public function by_user($user_id)
@@ -120,9 +60,31 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
 
+        // Same as using the StorePostRequest class
 
+        // $data = $request->validate(
+        //     [
+        //         'title' => 'required|min:10|max:255',
+        //         'body' => ['required', 'min:50', 'max:255'],
+        //         'post_status_id' => 'required|integer|exists:post_statuses,id',
+        //     ],
+        //     [
+        //         'title.required' => 'أسم المقال مطلوب',
+        //         'title.min' => 'يجب ان يكون عنوان المقال اكثر من 10 حروف',
+        //         'title.max' => 'يجب ان يكون عنوان المقال اقل من 255 حروف',
+        //         'body.required' => 'لابد من كتابة محتوى للمقال',
+        //         'body.min' => 'يجب ان يكون محتوى المقال اكثر من 50 حروف',
+        //         'body.max' => 'يجب ان يكون محتوى المقال اقل من 255 حروف',
+        //         'post_status_id.required' => 'لابد من اختيار حالة المقال',
+        //         'post_status_id.integer' => 'يجب ان يكون حالة المقال رقم',
+        //         'post_status_id.exists' => 'حالة المقال غير مقبولة',
+        //     ]
+        // );
 
-        return 'HELLO';
+        $data = $request->validated();
+
+        return $data;
+
     }
 
     /**
@@ -131,32 +93,11 @@ class PostController extends Controller
     public function show(Post $post)
     {
 
-        // $post->load(['post_status', 'user', 'comments:post_id,comment', 'reactions:reactionable_id,user_id,reaction_type_id']);
 
-        // $post = DB::table('posts')
-        // return $post;
-        //     ->join('post_statuses', 'post_statuses.id', '=', 'posts.post_status_id')
-        //     ->select(['posts.id AS post_id', 'title AS Post Title', 'body', 'type', 'user_id', 'post_statuses.id AS post_status_id'])
-        //     ->where('posts.id', $post->id)
-        //     ->get();
+        $post->load(['comments.replies', 'reactions.reactionType']);
 
-        // $post = Post::with('post_status')->where('id', $post)->first();
-
-
-
-        // $post->load('post_status');
-        // $post->load('post_status')->load('user');
-
-        // The Same 
-        // $post->load('comments');
-        $post->load('comments.replies');
-
-        // $readyPost = PostResource::make($post);
-        // $readyPost = new PostResource($post);
-        // PostResource::wrap('Content');
-        // PostResource::withoutWrapping();
         $readyPost = $post->toResource();
-        return $readyPost;
+        return new PostResource($readyPost);
 
     }
 
