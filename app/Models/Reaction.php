@@ -7,11 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class Reaction extends Model
+class Reaction extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\ReactionFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'reaction_type_id',
+        'reactionable_type',
+        'reactionable_id',
+    ];
 
     // Relationships
     public function user(): BelongsTo

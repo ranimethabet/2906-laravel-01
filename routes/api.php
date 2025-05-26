@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('posts')->controller(PostController::class)->group(function () {
     Route::get('/by-user/{user_id}', 'by_user'); // https://website.com/posts/by/4
     Route::get('/by-post-status-id/{post_status_id}', 'ids_by_post_status'); // https://website.com/posts/by/4
+    Route::get('/deleted', 'deleted');
+    Route::put('/restore/{id}', 'restore_post');
 });
 
 Route::prefix('users')->controller(UserController::class)->group(function () {

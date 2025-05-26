@@ -3,16 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-class Post extends Model
+
+class Post extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\PostFactory> */
     use HasFactory;
 
+    // Use fillable or guarded
+    // NOTE: fillable is safer than guarded, but guarded is easier to use
+    // Because we are using fillable, we need to add the fields to the fillable array in the model
+
+    protected $fillable = [
+        'title',
+        'body',
+        'post_status_id',
+        'user_id',
+    ];
+
+    // protected $guarded = [];
 
     // Relationships
 
