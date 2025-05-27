@@ -11,7 +11,7 @@ class UpdatePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => ['min:10'],
+            'body' => 'min:50|max:255',
+            'post_status_id' => 'integer|exists:post_statuses,id',
         ];
     }
 }

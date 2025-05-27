@@ -7,10 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-class Reply extends Model
+class Reply extends BaseModel
 {
     /** @use HasFactory<\Database\Factories\ReplyFactory> */
     use HasFactory;
+
+
+    protected $fillable = [
+        'reply',
+        'user_id',
+        'comment_id',
+    ];
 
     // Relationships
     public function user(): BelongsTo

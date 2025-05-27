@@ -19,7 +19,7 @@ class PostController extends Controller
     public function index()
     {
 
-        $posts = Post::with('reactions')->get();
+        $posts = Post::with('reactions')->limit($this->limit)->get();
 
         return new PostCollection($posts);
     }
@@ -51,7 +51,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('create-post');
+        //
     }
 
     /**
@@ -60,30 +60,14 @@ class PostController extends Controller
     public function store(StorePostRequest $request)
     {
 
-        // Same as using the StorePostRequest class
-
-        // $data = $request->validate(
-        //     [
-        //         'title' => 'required|min:10|max:255',
-        //         'body' => ['required', 'min:50', 'max:255'],
-        //         'post_status_id' => 'required|integer|exists:post_statuses,id',
-        //     ],
-        //     [
-        //         'title.required' => 'أسم المقال مطلوب',
-        //         'title.min' => 'يجب ان يكون عنوان المقال اكثر من 10 حروف',
-        //         'title.max' => 'يجب ان يكون عنوان المقال اقل من 255 حروف',
-        //         'body.required' => 'لابد من كتابة محتوى للمقال',
-        //         'body.min' => 'يجب ان يكون محتوى المقال اكثر من 50 حروف',
-        //         'body.max' => 'يجب ان يكون محتوى المقال اقل من 255 حروف',
-        //         'post_status_id.required' => 'لابد من اختيار حالة المقال',
-        //         'post_status_id.integer' => 'يجب ان يكون حالة المقال رقم',
-        //         'post_status_id.exists' => 'حالة المقال غير مقبولة',
-        //     ]
-        // );
-
         $data = $request->validated();
 
-        return $data;
+        // Temporary solution
+        $data['user_id'] = 1;
+
+        $added_post = Post::create($data);
+
+        return $added_post;
 
     }
 
@@ -114,7 +98,15 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        //
+        // return $request->validated();
+        $data = $request->validated();
+
+        $updated = $post->update($data);
+
+        if ($updated)
+            return new PostResource($post);
+
+        return 'Post faild to update';
     }
 
     /**
@@ -122,6 +114,37 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        // return Post::destroy($post->id);
+
+        // OR
+
+        return $post->delete();
+    }
+
+    public function deleted()
+    {
+        // Get only soft deleted records
+        $posts = Post::onlyTrashed()->get();
+
+        return PostResource::collection($posts);
+    }
+
+    public function restore_post($id)
+    {
+        $post = Post::onlyTrashed()->find($id);
+
+        // OR
+        // $post = Post::withTrashed()->find($id);
+        // OR
+
+        // $post = Post::withTrashed()->where('id', $id)->first();
+
+        if ($post === null)
+            return 'Not found';
+
+        if ($post->restore())
+            return 'Post Restored Successfully';
+
+        return 'Post failed to restore';
     }
 }
