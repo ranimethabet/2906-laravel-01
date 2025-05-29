@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
@@ -12,67 +13,71 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 
-// Route::apiResource('posts', PostController::class);
-// Route::apiResource('comments', CommentController::class);
-// Route::apiResource('replies', ReplyController::class);
-// Route::apiResource('post-statuses', PostStatusController::class);
-// Route::apiResource('reaction-types', ReactionTypeController::class);
-// Route::apiResource('users', UserController::class);
-// Route::apiResource('reactions', ReactionController::class);
+// Protected Routes by Sanctum
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('posts')->controller(PostController::class)->group(function () {
+        Route::get('/by-user/{user_id}', 'by_user'); // https://website.com/posts/by/4
+        Route::get('/by-post-status-id/{post_status_id}', 'ids_by_post_status'); // https://website.com/posts/by/4
+        Route::get('/deleted', 'deleted');
+        Route::put('/restore/{id}', 'restore_post');
+    });
 
-Route::prefix('posts')->controller(PostController::class)->group(function () {
-    Route::get('/by-user/{user_id}', 'by_user'); // https://website.com/posts/by/4
-    Route::get('/by-post-status-id/{post_status_id}', 'ids_by_post_status'); // https://website.com/posts/by/4
-    Route::get('/deleted', 'deleted');
-    Route::put('/restore/{id}', 'restore_post');
+    Route::prefix('users')->controller(UserController::class)->group(function () {
+        Route::get('/contacts', 'contacts');
+    });
+
+
+    Route::apiResources([
+        'posts' => PostController::class,
+        'comments' => CommentController::class,
+        'replies' => ReplyController::class,
+        'post-statuses' => PostStatusController::class,
+        'reaction-types' => ReactionTypeController::class,
+        'users' => UserController::class,
+        'reactions' => ReactionController::class,
+    ]);
+
+
+
+    Route::prefix('dashboard')->controller(DashboardController::class)->group(function () {
+        Route::get('statistics', 'statistics');
+    });
+
+    Route::get('/init', function () {
+        $models = [
+            'User',
+            'ReactionType',
+            'PostStatus',
+            'Post',
+            'Comment',
+            'Reply',
+            'Reaction',
+        ];
+
+        foreach ($models as $model) {
+
+            // SAME AS : php artisan make:model ModelName -a
+            // Artisan::call('make:model', ['name' => $model, '-a' => true]);
+
+
+            // SAME AS : php artisan make:resource NameResource
+            // Artisan::call('make:resource', ['name' => "{$model}Resource"]);
+
+            // SAME AS : php artisan make:resource NameCollection
+            // Artisan::call('make:resource', ['name' => "{$model}Resource", '--collection' => true]);
+            // OR
+            Artisan::call('make:resource', ['name' => "{$model}Collection"]);
+
+            // sleep(1);
+        }
+
+        return 'DONE';
+    });
 });
 
-Route::prefix('users')->controller(UserController::class)->group(function () {
-    Route::get('/contacts', 'contacts');
-});
 
-Route::apiResources([
-    'posts' => PostController::class,
-    'comments' => CommentController::class,
-    'replies' => ReplyController::class,
-    'post-statuses' => PostStatusController::class,
-    'reaction-types' => ReactionTypeController::class,
-    'users' => UserController::class,
-    'reactions' => ReactionController::class,
-]);
-
-
-Route::prefix('dashboard')->controller(DashboardController::class)->group(function () {
-    Route::get('statistics', 'statistics');
-});
-
-Route::get('/init', function () {
-    $models = [
-        'User',
-        'ReactionType',
-        'PostStatus',
-        'Post',
-        'Comment',
-        'Reply',
-        'Reaction',
-    ];
-
-    foreach ($models as $model) {
-
-        // SAME AS : php artisan make:model ModelName -a
-        // Artisan::call('make:model', ['name' => $model, '-a' => true]);
-
-
-        // SAME AS : php artisan make:resource NameResource
-        // Artisan::call('make:resource', ['name' => "{$model}Resource"]);
-
-        // SAME AS : php artisan make:resource NameCollection
-        // Artisan::call('make:resource', ['name' => "{$model}Resource", '--collection' => true]);
-        // OR
-        Artisan::call('make:resource', ['name' => "{$model}Collection"]);
-
-        // sleep(1);
-    }
-
-    return 'DONE';
+// Unprotected Routes
+Route::prefix('auth')->controller(AuthController::class)->group(function () {
+    Route::post('/login', 'login');
+    Route::post('/mobile/login', 'mobile_login');
 });
