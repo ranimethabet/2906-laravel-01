@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
             'post' => 'App\Models\Post',
             'comment' => 'App\Models\Comment',
             'reply' => 'App\Models\Reply',
+            'user' => 'App\Models\User',
         ]);
 
 
