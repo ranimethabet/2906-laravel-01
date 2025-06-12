@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 
 // Protected Routes by Sanctum
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::prefix('posts')->controller(PostController::class)->group(function () {
         Route::get('/by-user/{user_id}', 'by_user'); // https://website.com/posts/by/4
         Route::get('/by-post-status-id/{post_status_id}', 'ids_by_post_status'); // https://website.com/posts/by/4
@@ -26,6 +26,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/contacts', 'contacts');
     });
 
+
+    Route::prefix('replies')->controller(ReplyController::class)->group(function () {
+        Route::get('/by-comment/{comment_id}', 'by_comment');
+    });
 
     Route::apiResources([
         'posts' => PostController::class,
@@ -79,5 +83,6 @@ Route::middleware('auth:sanctum')->group(function () {
 // Unprotected Routes
 Route::prefix('auth')->controller(AuthController::class)->group(function () {
     Route::post('/login', 'login');
+    Route::post('/register', 'register');
     Route::post('/mobile/login', 'mobile_login');
 });

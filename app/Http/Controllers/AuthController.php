@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthLoginRequest;
+use App\Http\Requests\AuthRegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -15,7 +17,7 @@ class AuthController extends Controller
         $auth = auth()->attempt($data);
 
         if ($auth) {
-            return 'OK';
+
             $user = auth()->user();
 
             $token = $user->createToken('login')->plainTextToken;
@@ -27,6 +29,22 @@ class AuthController extends Controller
         }
 
         return 'Email and password are not correct';
+    }
+
+    public function register(AuthRegisterRequest $request)
+    {
+        $data = $request->validated();
+
+        $data['roles'] = 'user';
+
+        $user = User::create($data);
+
+        // $token = $user->createToken('web_regiter')->plainTextToken;
+
+        // Send a verification email to the user
+
+        return new UserResource($user);
+
     }
 
     public function mobile_login(AuthLoginRequest $request)

@@ -63,4 +63,16 @@ class ReplyController extends Controller
     {
         //
     }
+
+
+
+    /**
+     * get all replies by Comment id.
+     */
+    public function by_comment($comment_id)
+    {
+        return Reply::where('comment_id', $comment_id)->get();
+    }
+
+
 }
