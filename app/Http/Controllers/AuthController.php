@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthLoginRequest;
 use App\Http\Requests\AuthRegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\VerificationEmail;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -42,6 +44,12 @@ class AuthController extends Controller
         // $token = $user->createToken('web_regiter')->plainTextToken;
 
         // Send a verification email to the user
+        if ($user) {
+            // Mail::to($user->email)->send(new VerificationEmail());
+
+            // Next line is for testing
+            Mail::to('magedyaseengroups@gmail.com')->send(new VerificationEmail());
+        }
 
         return new UserResource($user);
 

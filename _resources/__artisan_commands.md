@@ -126,3 +126,12 @@ php artisan make:resource PostResource --collection
 php artisan install:api
 ```
 
+## create a new request
+```bash
+php artisan make:request RegisterRequest
+```
+
+## create a new mail
+```bash
+php artisan make:mail VerificationEmail
+```
