@@ -81,8 +81,12 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 
 // Unprotected Routes
-Route::prefix('auth')->controller(AuthController::class)->group(function () {
-    Route::post('/login', 'login');
+Route::name('auth.')->prefix('auth')->controller(AuthController::class)->group(function () {
+    Route::middleware('verified')->group(function () {
+        Route::post('/login', 'login')->name('login'); // auth.login
+        Route::post('/mobile/login', 'mobile_login');
+    });
+
     Route::post('/register', 'register');
-    Route::post('/mobile/login', 'mobile_login');
+    Route::get('/verify-email', 'verify_email')->name('verify_email'); // auth.verify_email
 });

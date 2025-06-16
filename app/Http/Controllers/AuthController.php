@@ -35,6 +35,8 @@ class AuthController extends Controller
 
     public function register(AuthRegisterRequest $request)
     {
+
+
         $data = $request->validated();
 
         $data['roles'] = 'user';
@@ -47,11 +49,22 @@ class AuthController extends Controller
         if ($user) {
             // Mail::to($user->email)->send(new VerificationEmail());
 
+
+            // Create a signed route
+            $verficationURL = url()->temporarySignedRoute(
+                'auth.verify_email',
+                now()->addMinutes(60),
+                ['id' => 500]
+            );
+
+
             // Next line is for testing
-            Mail::to('magedyaseengroups@gmail.com')->send(new VerificationEmail());
+            Mail::to('magedyaseengroups@gmail.com')->send(new VerificationEmail($user, $verficationURL));
+
+            return new UserResource($user);
         }
 
-        return new UserResource($user);
+        return response()->json(['message' => 'Registration failed'], 500);
 
     }
 
@@ -73,5 +86,11 @@ class AuthController extends Controller
         }
 
         return 'Email and password are not correct';
+    }
+
+    public function verify_email(Request $request)
+    {
+
+        return $request->hasValidSignature() ? 'Valid' : 'Not valid';
     }
 }
