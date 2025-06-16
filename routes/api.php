@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Route;
 
 // Protected Routes by Sanctum
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+
+    Route::prefix('auth')->controller(AuthController::class)->group(function () {
+        Route::get('active-sessions', 'active_sessions');
+    });
+
     Route::prefix('posts')->controller(PostController::class)->group(function () {
         Route::get('/by-user/{user_id}', 'by_user'); // https://website.com/posts/by/4
         Route::get('/by-post-status-id/{post_status_id}', 'ids_by_post_status'); // https://website.com/posts/by/4
@@ -40,8 +45,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         'users' => UserController::class,
         'reactions' => ReactionController::class,
     ]);
-
-
 
     Route::prefix('dashboard')->controller(DashboardController::class)->group(function () {
         Route::get('statistics', 'statistics');
@@ -83,10 +86,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 // Unprotected Routes
 Route::name('auth.')->prefix('auth')->controller(AuthController::class)->group(function () {
     Route::middleware('verified')->group(function () {
-        Route::post('/login', 'login')->name('login'); // auth.login
         Route::post('/mobile/login', 'mobile_login');
     });
+    Route::post('/login', 'login'); // auth.login
 
     Route::post('/register', 'register');
+    Route::post('/reverify', 'reverify');
     Route::get('/verify-email', 'verify_email')->name('verify_email'); // auth.verify_email
 });
