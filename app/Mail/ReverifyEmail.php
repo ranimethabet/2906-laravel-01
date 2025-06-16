@@ -9,10 +9,9 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class VerificationEmail extends Mailable
+class ReverifyEmail extends Mailable
 {
     use Queueable, SerializesModels;
-
 
     public $user;
     public $verficationURL;
@@ -32,7 +31,7 @@ class VerificationEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Verification Email',
+            subject: 'Reverify Email',
         );
     }
 
@@ -42,7 +41,7 @@ class VerificationEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.verification',
+            view: 'emails.reverify-email',
         );
     }
 
