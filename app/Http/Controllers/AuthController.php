@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthLoginRequest;
 use App\Http\Requests\AuthRegisterRequest;
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Mail\ReverifyEmail;
 use App\Mail\VerificationEmail;
@@ -22,6 +23,10 @@ class AuthController extends Controller
         if ($auth) {
 
             $user = auth()->user();
+
+            if (!$user->hasVerifiedEmail())
+                return response()->json(['message' => 'Email not verified'], 401);
+
 
             $token = $user->createToken('login')->plainTextToken;
 
@@ -87,7 +92,7 @@ class AuthController extends Controller
     {
 
         if (!$request->hasValidSignature()) {
-            return redirect('https://mwjb.net');
+            return redirect('http://127.0.0.1:5500/verification-expired.html');
         }
 
         $user = User::find($request->id);
@@ -102,7 +107,7 @@ class AuthController extends Controller
 
         $user->markEmailAsVerified();
 
-        return redirect('https://mwjb.net/login');
+        return redirect('http://127.0.0.1:5500/login.html');
 
     }
 
@@ -129,6 +134,83 @@ class AuthController extends Controller
         return $request->user()->tokens()->get();
     }
 
+    public function logout(Request $request)
+    {
+        if ($request->user()->currentAccessToken()->delete())
+            return response()->json(['message' => 'Logged out successfully'], 200);
+
+        return response()->json(['message' => 'Cannot logout at the moment, please reload the page and try again'], 400);
+    }
+
+    public function logout_all(Request $request)
+    {
+        if ($request->user()->tokens()->delete())
+            return response()->json(['message' => 'Logged out successfully'], 200);
+
+        return response()->json(['message' => 'Cannot logout at the moment, please reload the page and try again'], 400);
+    }
+
+    public function logout_others(AuthLoginRequest $request)
+    {
+
+        $credits = $request->validated();
+
+
+        // Be sure that the user is correctly authenticated
+        // Validate email
+        $user = User::where('email', $credits['email'])->first();
+
+        if (!$user)
+            return response()->json(['message' => 'Invalid email or password'], 404); // mail not found
+
+        // Validate password
+        if (!password_verify($credits['password'], $user->password))
+            return response()->json(['message' => 'Invalid email or password'], 401); // Password is not correct
+
+        $tokens = $request->user()->tokens()->get();
+
+        $tokens_count = $tokens->count();
+
+        $deleted_tokens = 0;
+
+        if ($tokens_count == 1)
+            return response()->json(['message' => 'You have only one session active'], 400);
+
+        $currentTokenId = $request->user()->currentAccessToken()->id;
+
+
+        foreach ($tokens as $token) {
+            if ($token->id !== $currentTokenId) {
+                if ($token->delete())
+                    $deleted_tokens++;
+            }
+        }
+
+        if ($deleted_tokens == $tokens_count - 1)
+            return response()->json(['message' => 'Logged out successfully'], 200);
+
+        return response()->json(['message' => 'Cannot logout from all devices at the moment, please reload the page and try again'], 400);
+    }
+
+    public function change_password(ChangePasswordRequest $request)
+    {
+        $data = $request->validated();
+
+        // Check the current password
+        if (!password_verify($data['password'], auth()->user()->password))
+            return response()->json(['message' => 'Current password is not correct'], 401);
+
+        // Check if the new password is the same as the current password
+        $user = auth()->user();
+        $user['password'] = $data['new_password'];
+        if ($user->save())
+            return response()->json(['message' => 'Password changed successfully'], 200);
+
+        return response()->json(['message' => 'Cannot change password at the moment, please reload the page and try again'], 400);
+
+
+    }
+
     private function createSignedVerificationRoute($id)
     {
 
@@ -142,6 +224,5 @@ class AuthController extends Controller
 
         return $url;
     }
-
 
 }

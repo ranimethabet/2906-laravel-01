@@ -11,8 +11,16 @@ class StorePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // return 500 > 50;
-        return true;
+        $route_roles = ['admin', 'moderator', 'posts.create'];
+
+        // Check if the user has the 'create-post' permission
+
+        $user_roles = explode(',', $this->user()->roles);
+
+        $has_role = array_intersect($route_roles, $user_roles);
+
+        return count($has_role) > 0;
+
     }
 
     /**
