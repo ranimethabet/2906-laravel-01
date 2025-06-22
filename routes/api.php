@@ -18,6 +18,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::get('active-sessions', 'active_sessions');
+        Route::get('logout', 'logout');
+        Route::post('logout-others', 'logout_others');
+        Route::post('logout-all', 'logout_all');
+        Route::post('change-password', 'change_password');
     });
 
     Route::prefix('posts')->controller(PostController::class)->group(function () {
@@ -85,10 +89,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 // Unprotected Routes
 Route::name('auth.')->prefix('auth')->controller(AuthController::class)->group(function () {
-    Route::middleware('verified')->group(function () {
-        Route::post('/mobile/login', 'mobile_login');
-    });
-    Route::post('/login', 'login'); // auth.login
+
+    Route::post('/mobile/login', 'mobile_login');
+    Route::post('/login', 'login');
 
     Route::post('/register', 'register');
     Route::post('/reverify', 'reverify');
