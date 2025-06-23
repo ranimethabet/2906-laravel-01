@@ -25,9 +25,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 
     Route::prefix('posts')->controller(PostController::class)->group(function () {
-        Route::get('/by-user/{user_id}', 'by_user'); // https://website.com/posts/by/4
+        Route::get('/by-user/{user_id}', 'by_user')->middleware('hasRole:admin|moderator');
         Route::get('/by-post-status-id/{post_status_id}', 'ids_by_post_status'); // https://website.com/posts/by/4
-        Route::get('/deleted', 'deleted');
+        Route::get('/deleted', 'deleted')->middleware(['hasRole:admin|moderator|posts.deleted']);
         Route::put('/restore/{id}', 'restore_post');
     });
 

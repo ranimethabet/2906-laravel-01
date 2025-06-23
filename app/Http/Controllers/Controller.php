@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\JsonResponseTrait;
+
 abstract class Controller
 {
+
+    use JsonResponseTrait;
 
     /**
      * limit for paginate
@@ -11,5 +15,4 @@ abstract class Controller
      *
      */
     protected $limit = 30;
-
 }

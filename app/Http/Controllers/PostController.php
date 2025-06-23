@@ -9,7 +9,9 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+
 
 class PostController extends Controller
 {
@@ -68,7 +70,6 @@ class PostController extends Controller
         $added_post = Post::create($data);
 
         return $added_post;
-
     }
 
     /**
@@ -82,7 +83,6 @@ class PostController extends Controller
 
         $readyPost = $post->toResource();
         return new PostResource($readyPost);
-
     }
 
     /**
@@ -98,9 +98,13 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
+        Gate::authorize('ownPost', $post);
+
+
         // return $request->validated();
         $data = $request->validated();
 
+        // update the post wuth with $data
         $updated = $post->update($data);
 
         if ($updated)
@@ -114,11 +118,19 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+
+
+        Gate::authorize('ownPost', $post);
+
         // return Post::destroy($post->id);
 
         // OR
 
-        return $post->delete();
+
+        if ($post->delete())
+            return $this->success([], 'Post Deleted', 201);
+
+        return $this->error('Cannot delete the post', 404);
     }
 
     public function deleted()
@@ -126,12 +138,16 @@ class PostController extends Controller
         // Get only soft deleted records
         $posts = Post::onlyTrashed()->get();
 
-        return PostResource::collection($posts);
+        $deletedPosts = PostResource::collection($posts);
+
+         return $this->success($deletedPosts, 'Deleted Posts', 202);
     }
 
     public function restore_post($id)
     {
+
         $post = Post::onlyTrashed()->find($id);
+
 
         // OR
         // $post = Post::withTrashed()->find($id);
@@ -141,6 +157,14 @@ class PostController extends Controller
 
         if ($post === null)
             return 'Not found';
+
+        return response()->json([
+            'code' => 404,
+            'data' => [],
+            'message' => 'Cannot restore the post'
+        ]);
+
+        Gate::authorize('ownPost', $post);
 
         if ($post->restore())
             return 'Post Restored Successfully';
