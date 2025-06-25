@@ -21,7 +21,7 @@ class PostResource extends JsonResource
             'Reactions' => ReactionResource::collection($this->whenLoaded('reactions')),
             'Comments' => CommentResource::collection($this->whenLoaded('comments')),
             'Post Status' => PostStatusResource::make($this->post_status),
-            // 'By' => UserResource::make($this->user),
+            'By' => UserResource::make($this->user),
             // 'Comments Count' => $this->comments->count(),
         ];
     }

@@ -13,7 +13,7 @@ class PostPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -62,5 +62,11 @@ class PostPolicy
     public function forceDelete(User $user, Post $post): bool
     {
         return false;
+    }
+
+
+    public function ownPost(User $user, Post $post): bool
+    {
+        return $post->user_id === $user->id;
     }
 }
