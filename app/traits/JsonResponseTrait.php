@@ -79,7 +79,7 @@ trait JsonResponseTrait
             'message' => $message,
             'ok' => $ok,
             'status' => $this->responses[$code] ?? 'Unknown Status'
-        ]);
+        ])->setStatusCode($code);
     }
 
     public function error($message = "Error", $code = 400, $ok = false)
@@ -89,6 +89,6 @@ trait JsonResponseTrait
             'message' => $message,
             'ok'      => $ok,
             'status' => $this->responses[$code] ?? 'Unknown Status'
-        ]);
+        ])->setStatusCode($code);
     }
 }

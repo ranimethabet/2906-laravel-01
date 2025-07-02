@@ -81,7 +81,7 @@ php artisan migrate:fresh
 
 ## run DatabseSeeder class in database/seeders folder
 ```bash
-php artisan db:seed 
+php artisan db:seed
 ```
 
 ## crate model
@@ -135,3 +135,12 @@ php artisan make:request RegisterRequest
 ```bash
 php artisan make:mail VerificationEmail
 ```
+
+
+## create a new exception
+```bash
+php artisan make:exception CustomException
+ # or
+php artisan make:exception
+```
+
